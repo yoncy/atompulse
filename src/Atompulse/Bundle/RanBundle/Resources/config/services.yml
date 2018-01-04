@@ -39,7 +39,7 @@ services:
     class:      Atompulse\Bundle\RanBundle\Listener\Security\SecurityExceptionListener
     arguments: ['@ran.security.exception.authentication.handler', '@ran.security.exception.authorization.handler']
     tags:
-        - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 255 }
+        - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 256 }
 
   # RAN Security Authentication Exception Listener
   ran.security.exception.authentication.handler:
