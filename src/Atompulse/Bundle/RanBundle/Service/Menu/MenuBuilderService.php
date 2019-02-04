@@ -2,7 +2,6 @@
 namespace Atompulse\Bundle\RanBundle\Service\Menu;
 
 use Atompulse\Bundle\RanBundle\Service\Security\SecurityAdviser;
-
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -102,6 +101,9 @@ class MenuBuilderService
                         || !$securityAdviser->getRouteRequiredPermissions($itemData['route'])
                     ) {
                         $menuGroupItems[$itemKey] = $this->processMenuItem($itemData);
+                        // if user has override set, add menu group item
+                    } elseif ($securityAdviser->userHasOverrideRoles()) {
+                        $menuGroupItems[$itemKey] = $this->processMenuItem($itemData);
                     }
                 }
                 // add menu group with items
@@ -116,6 +118,9 @@ class MenuBuilderService
                     || $securityAdviser->userHasOverrideRoles()
                     || !$securityAdviser->getRouteRequiredPermissions($menuGroupData['route'])
                 ) {
+                    $menuData[$menuGroup] = $this->processMenuGroupItem($menuGroupData, $menuGroupItems);
+                    // if user has override set, add menu item
+                } elseif ($securityAdviser->userHasOverrideRoles()) {
                     $menuData[$menuGroup] = $this->processMenuGroupItem($menuGroupData, $menuGroupItems);
                 }
             }
