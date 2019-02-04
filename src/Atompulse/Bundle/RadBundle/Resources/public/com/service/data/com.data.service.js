@@ -17,15 +17,20 @@ angular.module('Web.Components')
             /**
              * Get an Name Spaced Object from $window.Application
              * @param namespace
+             * @param strictMode if defined, will skip javascript error
              * @returns {*}
              */
-            DataService.get = function (namespace) {
+            DataService.get = function (namespace, strictMode) {
 
                 if (this.has(namespace)) {
                     return Fusion.retrieveNsObject(namespace, ApplicationGlobalData);
                 }
 
-                throw new Error("DataService::get [window.Application."+namespace+"] does not exist");
+                if (typeof strictMode === undefined) {
+                    throw new Error("DataService::get [window.Application."+namespace+"] does not exist");
+                }
+
+                return null;
             };
 
             /**
