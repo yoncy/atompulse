@@ -2,22 +2,21 @@
 
 namespace Atompulse\Component\Grid;
 
+use Atompulse\Component\Data\Transform;
 use Atompulse\Component\Grid\Configuration\Definition\GridAction;
 use Atompulse\Component\Grid\Configuration\Definition\GridField;
+use Atompulse\Component\Grid\Configuration\GridConfiguration;
 use Atompulse\Component\Grid\Data\Flow\OutputMetaData;
 use Atompulse\Component\Grid\Data\Flow\OutputMetaDataInterface;
 use Atompulse\Component\Grid\Data\Flow\Parameters;
-
-use Atompulse\Component\Data\Transform;
 use Atompulse\Component\Grid\Data\Source\DataSourceInterface;
-use Atompulse\Component\Grid\Configuration\GridConfiguration;
-
 
 /**
  * Class DataGrid
+ *
  * @package Atompulse\Component\Grid
  *
- * @author Petru Cojocar <petru.cojocar@gmail.com>
+ * @author  Petru Cojocar <petru.cojocar@gmail.com>
  */
 class DataGrid implements DataGridInterface
 {
@@ -69,6 +68,7 @@ class DataGrid implements DataGridInterface
 
     /**
      * Create DataGrid Instance
+     *
      * @param GridConfiguration $config
      */
     public function __construct(GridConfiguration $config)
@@ -80,7 +80,9 @@ class DataGrid implements DataGridInterface
 
     /**
      * Set the parameters for the grid
+     *
      * @param Parameters $parameters
+     *
      * @return $this
      */
     public function setParameters(Parameters $parameters)
@@ -92,7 +94,9 @@ class DataGrid implements DataGridInterface
 
     /**
      * Set the data source
+     *
      * @param DataSourceInterface $ds
+     *
      * @return $this
      */
     public function setDataSource(DataSourceInterface $ds)
@@ -104,16 +108,17 @@ class DataGrid implements DataGridInterface
 
     /**
      * Get the grid data
+     *
      * @return array
      * @throws \Exception
      */
-    public function getData()
+    public function getData(): array
     {
         if (!$this->dataSource) {
-            throw new \Exception("DataSource not given, make sure you have passed a correct DataSource instance using DataGrid::setDataSource");
+            throw new \Exception('DataSource not given, make sure you have passed a correct DataSource instance using DataGrid::setDataSource');
         }
         if (!$this->parameters) {
-            throw new \Exception("Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters");
+            throw new \Exception('Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters');
         }
 
         $this->processGridFieldsOrderSettings();
@@ -146,6 +151,7 @@ class DataGrid implements DataGridInterface
 
     /**
      * Process grid configuration and return metadata
+     *
      * @return array|bool
      */
     public function getMetaData()
@@ -155,13 +161,13 @@ class DataGrid implements DataGridInterface
                  ->prepareGridActions();
 
             $this->gridMetaData = [
-                'header' => $this->gridHeader,
+                'header'          => $this->gridHeader,
                 'columnsOrderMap' => [
                     'name2pos' => $this->gridFieldsOrder,
-                    'pos2name' => array_flip($this->gridFieldsOrder)
+                    'pos2name' => array_flip($this->gridFieldsOrder),
                 ],
-                'rowActions' => $this->gridRowActions,
-                'customRenders' => $this->gridCustomRenders
+                'rowActions'      => $this->gridRowActions,
+                'customRenders'   => $this->gridCustomRenders,
             ];
         }
 
@@ -170,13 +176,14 @@ class DataGrid implements DataGridInterface
 
     /**
      * Return the filters
+     *
      * @return array
      * @throws \Exception
      */
     public function getFilters()
     {
         if (!$this->parameters) {
-            throw new \Exception("Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters");
+            throw new \Exception('Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters');
         }
 
         return $this->parameters->filters;
@@ -184,13 +191,14 @@ class DataGrid implements DataGridInterface
 
     /**
      * Return the sorters
+     *
      * @return array
      * @throws \Exception
      */
     public function getSorters()
     {
         if (!$this->parameters) {
-            throw new \Exception("Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters");
+            throw new \Exception('Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters');
         }
 
         return $this->parameters->sorters;
@@ -198,23 +206,25 @@ class DataGrid implements DataGridInterface
 
     /**
      * Return basic pagination information
+     *
      * @return array
      * @throws \Exception
      */
     public function getPagination()
     {
         if (!$this->parameters) {
-            throw new \Exception("Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters");
+            throw new \Exception('Parameters not given, make sure you have passed a correct Parameters instance using DataGrid::setParameters');
         }
 
-        return ['page' => $this->parameters->page, 'page-size' => $this->parameters->pageSize];
+        return [ 'page' => $this->parameters->page, 'page-size' => $this->parameters->pageSize ];
     }
 
     /**
      * Prepare the grid header
+     *
      * @return \Atompulse\Component\Grid\DataGrid
      */
-    protected function prepareGridHeader()
+    protected function prepareGridHeader(): DataGrid
     {
         if (!$this->gridHeader) {
             $header = [];
@@ -235,11 +245,15 @@ class DataGrid implements DataGridInterface
                 $header[$idx]['cellClass'] = $field->cell_css;
                 switch ($field->type) {
                     case GridField::FIELD_TYPE_ACTIONS :
-                        $header[$idx]['label'] = $field->label ? $field->label : 'Actions';
+                        $header[$idx]['label'] = $field->label ?: 'Actions';
                         $header[$idx]['isAction'] = true;
                         break;
                     case GridField::FIELD_TYPE_VIRTUAL :
-                        $header[$idx]['label'] = $field->label ? $field->label : Transform::camelize($field->name);
+                        if ($field->label) {
+                            $header[$idx]['label'] = $field->label;
+                        } else {
+                            $header[$idx]['label'] = Transform::camelize($field->name);
+                        }
                         $this->virtualFields[] = $field->name;
                         if ($field->render) {
                             // custom render
@@ -247,7 +261,7 @@ class DataGrid implements DataGridInterface
                         }
                         break;
                     default:
-                        $header[$idx]['label'] = $field->label ? $field->label : Transform::camelize($field->name);
+                        $header[$idx]['label'] = $field->label ?: Transform::camelize($field->name);
                         $header[$idx]['isAction'] = false;
                         if ($field->render) {
                             // custom render
@@ -266,9 +280,12 @@ class DataGrid implements DataGridInterface
 
     /**
      * Transform DataSource data to DataGrid compatible data structure
+     *
+     * @param array $data
+     *
      * @return array
      */
-    protected function normalizeDataSourceData(array $data)
+    protected function normalizeDataSourceData(array $data): array
     {
         $normalizedData = [];
         $fields = array_keys($this->gridFieldsOrder);
@@ -278,7 +295,7 @@ class DataGrid implements DataGridInterface
             foreach ($row as $field => $value) {
                 $field = Transform::unCamelize($field);
                 // skip fields that are not defined
-                if (!in_array($field, $fields)) {
+                if (!in_array($field, $fields, true)) {
                     continue;
                 }
                 // assign order in the result array
@@ -301,11 +318,9 @@ class DataGrid implements DataGridInterface
     }
 
     /**
-     * Prepare the grid row actions
-     * @return $this
-     * @throws \Atompulse\Component\Domain\Data\Exception\PropertyNotValidException
+     * @return \Atompulse\Component\Grid\DataGrid
      */
-    protected function prepareGridActions()
+    protected function prepareGridActions(): DataGrid
     {
         if (!$this->gridRowActions) {
             $rowActions = [];
@@ -321,15 +336,18 @@ class DataGrid implements DataGridInterface
             }
             $this->gridRowActions = $rowActions;
         }
-
-        return $this;
     }
+
+
+
+
 
     /**
      * Process grid fields order
-     * @return $this
+     *
+     * @return \Atompulse\Component\Grid\DataGrid
      */
-    protected function processGridFieldsOrderSettings()
+    protected function processGridFieldsOrderSettings(): DataGrid
     {
         if (!count($this->gridFieldsOrder)) {
             $definedFieldsOrder = count($this->config->order) ? array_flip(array_values($this->config->order)) : [];
@@ -352,10 +370,12 @@ class DataGrid implements DataGridInterface
 
     /**
      * Prepare params for an action
+     *
      * @param array $params
+     *
      * @return array
      */
-    private function prepareActionParams($params)
+    private function prepareActionParams($params): array
     {
         $preparedParams = [];
         foreach ($params as $paramName) {
