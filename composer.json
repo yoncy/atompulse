@@ -2,7 +2,7 @@
   "name": "yoncy/atompulse",
   "description": "Atompulse",
   "type": "metapackage",
-  "license": "Apache 2.0",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Petru Cojocar",
