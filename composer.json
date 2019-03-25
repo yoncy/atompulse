@@ -1,5 +1,5 @@
 {
-  "name": "atompulse/atompulse",
+  "name": "yoncy/atompulse",
   "description": "Atompulse",
   "type": "metapackage",
   "license": "Apache 2.0",
@@ -18,7 +18,6 @@
   ],
   "autoload": {
     "psr-4": {
-      "Atompulse\\Bridge\\": "src/Atompulse/Bridge/",
       "Atompulse\\Bundle\\": "src/Atompulse/Bundle/",
       "Atompulse\\Component\\": "src/Atompulse/Component/",
       "Atompulse\\Utils\\": "src/Atompulse/Utils/"
@@ -28,29 +27,25 @@
     ]
   },
   "require": {
-    "symfony/symfony": "3.*||4.*",
+    "symfony/lts": "v3",
     "league/json-guard": "^0.5.1",
-    "fzaninotto/faker": "^1.6@dev",
+    "composer/composer": "^1.6",
+    "fzaninotto/faker": "^1.7",
     "propel/propel-bundle": "dev-build-properties-fix"
   },
   "require-dev": {
-    "sensio/generator-bundle": "^3.0",
-    "sensio/distribution-bundle": "^5.0.19",
-    "sensio/framework-extra-bundle": "^3.0.2"
+    "sensio/generator-bundle": "^3.1",
+    "sensio/distribution-bundle": "^5.0",
+    "sensio/framework-extra-bundle": "^3.0"
   },
   "suggest": {
       "sokil/php-mongo": "Allows mongodb datasource for data grid component"
   },
   "config": {
     "sort-packages": true,
-    "vendor-dir": "vendor",
     "preferred-install": "dist"
   },
-  "extra": {
-    "symfony-app-dir": "app",
-    "symfony-bin-dir": "bin",
-    "symfony-var-dir": "var"
-  },
+  "extra": {},
   "minimum-stability": "dev",
   "prefer-stable": true
 }
